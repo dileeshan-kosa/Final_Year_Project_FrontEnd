@@ -213,6 +213,7 @@ import forge from "node-forge";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import SHA256 from "crypto-js/sha256";
+import { v4 as uuidv4 } from "uuid";
 
 const PlacedVotes = () => {
   const [data, setData] = useState({
@@ -251,8 +252,10 @@ const PlacedVotes = () => {
     return forge.util.encode64(encrypted); // base64 encoded output
   };
 
-  const hashNIC = (nic) => {
-    return SHA256(nic).toString(); // Hash the NIC and return it as a string
+  const hashNICWithSalt = (nic) => {
+    const salt = uuidv4();
+    const saltedNIC = nic + salt;
+    return SHA256(saltedNIC).toString();
   };
 
   const handleSelection = (id) => {
@@ -322,15 +325,21 @@ const PlacedVotes = () => {
         // console.log("firstttt", response);
         if (response.status === 200) {
           const { voter } = response.data;
+          const rawFingerprint = voter?.fingerprint || "MATCHED";
+          const hashedFingerprint = SHA256(rawFingerprint).toString();
           // if (voter) {
           //   localStorage.setItem("voterDetails", JSON.stringify(voter));
           // }
           setData((prev) => ({
             ...prev,
-            fingerprint: voter?.fingerprint || "MATCHED",
+            fingerprint: hashedFingerprint,
+            // fingerprint: voter?.fingerprint || "MATCHED",
           }));
 
-          const hashedNIC = hashNIC(userData.nic);
+          const hashedNIC = hashNICWithSalt(userData.nic);
+          const encryptedCandidateName = encryptWithRSA(
+            selectedCandidateData?.name
+          );
           // console.log("Hiiiiii");
 
           // toast.success(`✅ Fingerprint matched! Welcome, ${voter.name}`, {
@@ -338,14 +347,39 @@ const PlacedVotes = () => {
           // });
           // console.log("gggggggggggggggggggggggg");
 
-          console.log("Vote submission details:", {
+          console.log("Vote submission:", {
             // candidate: selectedCandidate,
+            // candidate1: selectedCandidateData.name,
             // nic: userData.nihashedNIC: hashedNIC, // This is the hashed NICc,
             hashedNIC: hashedNIC, // This is the hashed NIC
+            // hashedNIC2: userData.nic,
             fingerprint: userData.fingerprint,
-            encryptedVote: currentEncryptedHash,
+            fingerprint2: hashedFingerprint,
+            // encryptedVote: currentEncryptedHash,
             // allGeneratedHashes: generatedHashes,
           });
+
+          // console.log(
+          //   'Voter hash nic and fingerprint :\nObject { Hashed: "' +
+          //     hashedNIC +
+          //     '" / ' +
+          //     encryptedCandidateName +
+          //     " }"
+          // );
+
+          console.log(
+            "Vote submission details: encryptedVote = " +
+              currentEncryptedHash +
+              ":" +
+              encryptedCandidateName
+          );
+
+          console.log(
+            `Vote submission detailssssssssssssss= ${hashedNIC}/ ${hashedFingerprint}/${currentEncryptedHash}:${encryptedCandidateName}`
+          );
+
+          // console.log("Plain Text")
+
           setHasVoted(true);
         }
       }
