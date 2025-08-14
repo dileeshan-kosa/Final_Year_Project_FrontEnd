@@ -317,19 +317,16 @@ const PlacedVotes = () => {
     setIsSubmitting(true); // ← Start loading
 
     try {
-      // Trigger fingerprint scan
       if (userData) {
         const response = await axios.get(
           `http://localhost:8000/captured-vote/${userData.nic}`
         );
-        // console.log("firstttt", response);
+
         if (response.status === 200) {
           const { voter } = response.data;
           const rawFingerprint = voter?.fingerprint || "MATCHED";
           const hashedFingerprint = SHA256(rawFingerprint).toString();
-          // if (voter) {
-          //   localStorage.setItem("voterDetails", JSON.stringify(voter));
-          // }
+
           setData((prev) => ({
             ...prev,
             fingerprint: hashedFingerprint,
@@ -347,18 +344,6 @@ const PlacedVotes = () => {
           // });
           // console.log("gggggggggggggggggggggggg");
 
-          console.log("Vote submission:", {
-            // candidate: selectedCandidate,
-            // candidate1: selectedCandidateData.name,
-            // nic: userData.nihashedNIC: hashedNIC, // This is the hashed NICc,
-            hashedNIC: hashedNIC, // This is the hashed NIC
-            // hashedNIC2: userData.nic,
-            fingerprint: userData.fingerprint,
-            fingerprint2: hashedFingerprint,
-            // encryptedVote: currentEncryptedHash,
-            // allGeneratedHashes: generatedHashes,
-          });
-
           // console.log(
           //   'Voter hash nic and fingerprint :\nObject { Hashed: "' +
           //     hashedNIC +
@@ -367,24 +352,32 @@ const PlacedVotes = () => {
           //     " }"
           // );
 
-          console.log(
-            "Vote submission details: encryptedVote = " +
-              currentEncryptedHash +
-              ":" +
-              encryptedCandidateName
-          );
+          // console.log(
+          //   "Vote submission details: encryptedVote = " +
+          //     currentEncryptedHash +
+          //     ":" +
+          //     encryptedCandidateName
+          // );
+          const encryptedVote = `${currentEncryptedHash}:${encryptedCandidateName}`;
 
-          console.log(
-            `Vote submission detailssssssssssssss= ${hashedNIC}/ ${hashedFingerprint}/${currentEncryptedHash}:${encryptedCandidateName}`
-          );
+          console.log("Vote submission:", {
+            hashNIC: hashedNIC,
+            hashFingerPrint: hashedFingerprint,
+            encryptedVote: encryptedVote,
+          });
 
-          // console.log("Plain Text")
+          // Send to backend
+          await axios.post("http://localhost:8000/api/sendVote", {
+            hashNIC: hashedNIC,
+            hashFingerPrint: hashedFingerprint,
+            encryptedVote: encryptedVote,
+          });
+          console.log("Data Submit")
 
           setHasVoted(true);
         }
       }
     } catch (error) {
-      // hasVoted(false);
       setHasVoted(false);
       console.error("Error scanning fingerprint:", error);
       if (error.response?.status === 404) {
