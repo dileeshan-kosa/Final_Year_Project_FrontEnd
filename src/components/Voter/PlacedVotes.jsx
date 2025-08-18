@@ -366,13 +366,27 @@ const PlacedVotes = () => {
             encryptedVote: encryptedVote,
           });
 
-          // Send to backend
-          await axios.post("http://localhost:8000/api/sendVote", {
+          // // Send to backend
+          // await axios.post("http://localhost:8000/api/sendVote", {
+          //   hashNIC: hashedNIC,
+          //   hashFingerPrint: hashedFingerprint,
+          //   encryptedVote: encryptedVote,
+          // });
+
+          // Prepare data
+          const voteData = {
             hashNIC: hashedNIC,
             hashFingerPrint: hashedFingerprint,
             encryptedVote: encryptedVote,
-          });
-          console.log("Data Submit")
+          };
+
+          // Show what is being sent
+          console.log("Sending vote data to backend:", voteData);
+
+          // Send to backend
+          await axios.post("http://localhost:8000/api/sendVote", voteData);
+          
+          console.log("Data Submit");
 
           setHasVoted(true);
         }
