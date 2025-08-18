@@ -460,7 +460,7 @@ const AddVoters = () => {
       setData((prevData) => ({ ...prevData, fingerprint: base64Data }));
     } catch (error) {
       console.error("Error scanning fingerprint:", error);
-      toast.error("Fingerprint scan failed ❌");
+      toast.error("Fingerprint scan failed");
     }
   };
 
@@ -477,11 +477,11 @@ const AddVoters = () => {
         data
       );
       console.log("response", response);
-      toast.success("Voter added successfully! ✅");
+      toast.success("Voter added successfully!");
       setData(initialData); // <-- Clear form after success
     } catch (error) {
       console.log("Error:", error);
-      toast.error("Something went wrong while adding voter ❌");
+      toast.error("Something went wrong while adding voter");
     }
   };
 
@@ -528,18 +528,6 @@ const AddVoters = () => {
           />
         </div>
 
-        {/* <div className="flex flex-col w-full mb-5 overflow-auto">
-          <label className="text-lg mb-2 text-center">DOB</label>
-          <input
-            type="text"
-            value={data.dob}
-            onChange={(e) => handleOnChange("dob", e.target.value)}
-            className="w- h-12 text-center bg-slate-300 rounded-md p-2"
-            placeholder="Type the DOB"
-            required
-          />
-        </div> */}
-
         <div className="flex flex-col w-full mb-5">
           <label className="text-lg mb-2 text-center">Gender</label>
           <select
@@ -554,18 +542,6 @@ const AddVoters = () => {
             <option value="Other">Other</option>
           </select>
         </div>
-
-        {/* <div className="flex flex-col w-full mb-5">
-          <label className="text-lg mb-2 text-center">Gender</label>
-          <input
-            type="text"
-            //value={data.reasone}
-            //onChange={(e) => handleOnChange("reasone", e.target.value)}
-            className="w- h-12 text-center bg-slate-300 rounded-md p-2"
-            placeholder="Type the Gender"
-            required
-          />
-        </div> */}
 
         <div className="flex flex-col w-full mb-5">
           <label className="text-lg mb-2 text-center">District</label>
