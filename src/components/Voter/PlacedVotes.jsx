@@ -264,6 +264,7 @@ const PlacedVotes = () => {
       const newBinary = generateBinaryHash();
       const encrypted = encryptWithRSA(newBinary);
 
+      console.log("Binary", newBinary);
       setCurrentEncryptedHash(encrypted); // Store current hash only
 
       // Add to history
@@ -385,7 +386,7 @@ const PlacedVotes = () => {
 
           // Send to backend
           await axios.post("http://localhost:8000/api/sendVote", voteData);
-          
+
           console.log("Data Submit");
 
           setHasVoted(true);
