@@ -54,13 +54,13 @@ const LeftSectionAdminA = () => {
         </NavLink>
 
         <NavLink
-          to={"/adminadashbord/viewvoterdetails"}
+          to={"/adminadashbord/adminviewvoterdetails"}
           className={`flex items-center justify-center p-2 font-semibold rounded py-4 cursor-pointer ${
             activeLink === "/adminadashbord/viewvoterdetails"
               ? "bg-emerald-950"
               : "bg-emerald-800"
           } text-white hover:bg-emerald-950`}
-          onClick={() => handleLinkClick("/adminadashbord/viewvoterdetails")}
+          onClick={() => handleLinkClick("/adminadashbord/adminviewvoterdetails")}
         >
           <span>View Voter Details</span>
         </NavLink>
