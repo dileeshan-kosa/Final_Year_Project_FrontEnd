@@ -229,18 +229,28 @@ const PlacedVotes = () => {
   const [generatedHashes, setGeneratedHashes] = useState([]);
   const [candidatesData, setCandidatesData] = useState([]);
   const [isRedirecting, setIsRedirecting] = useState(false);
+  const [rsaPublicKey, setRsaPublicKey] = useState("");
 
   const navigate = useNavigate();
 
-  const rsaPublicKey = `-----BEGIN PUBLIC KEY-----
-  MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAt+Rqe5bFkGiPaDG/KImZ
-  cZ1HXY9SkbAqzYhKldQZiknEDtIQbdY7ZsB9b6MwOrT9JHRPHgf5zQZx2ZxUXHZP
-  M9Fq3DhU5IXYrYYCVjU5T6kM2cs+JHZ5i5yzm0g8LRj+pWc9IjVj4EYYjfpqTXXm
-  AKKYBfq9iCu8KrkW5J5b7i2FfU4SUGFbSKW8thH3x6sOtR9Zl9Rt2gf78zXfPGOe
-  fs6hvOZKAH+c9ISZuHlAMwAVD9O8oNl2qBaUJ+ZV16Q+z+1tSkbtDbO77hzxK/Rl
-  W/ztQAw7Pu4DlOHO86iNwzJ8xwZcIkpDP3Um9nO9lf2Fbd2CEPMmDbBpjc6s8zyE
-  XwIDAQAB
-  -----END PUBLIC KEY-----`;
+  // const rsaPublicKey = `-----BEGIN PUBLIC KEY-----
+  // MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAt+Rqe5bFkGiPaDG/KImZ
+  // cZ1HXY9SkbAqzYhKldQZiknEDtIQbdY7ZsB9b6MwOrT9JHRPHgf5zQZx2ZxUXHZP
+  // M9Fq3DhU5IXYrYYCVjU5T6kM2cs+JHZ5i5yzm0g8LRj+pWc9IjVj4EYYjfpqTXXm
+  // AKKYBfq9iCu8KrkW5J5b7i2FfU4SUGFbSKW8thH3x6sOtR9Zl9Rt2gf78zXfPGOe
+  // fs6hvOZKAH+c9ISZuHlAMwAVD9O8oNl2qBaUJ+ZV16Q+z+1tSkbtDbO77hzxK/Rl
+  // W/ztQAw7Pu4DlOHO86iNwzJ8xwZcIkpDP3Um9nO9lf2Fbd2CEPMmDbBpjc6s8zyE
+  // XwIDAQAB
+  // -----END PUBLIC KEY-----`;
+
+  useEffect(() => {
+    const fetchPublicKey = async () => {
+      const res = await axios.get("http://localhost:8000/api/public-key");
+      console.log("Received Public Key: ", res.data.publicKey);
+      setRsaPublicKey(res.data.publicKey);
+    };
+    fetchPublicKey();
+  }, []);
 
   const generateBinaryHash = () => {
     return (Math.random() + 1).toString(2).substring(2, 18);
@@ -338,7 +348,7 @@ const PlacedVotes = () => {
           const encryptedCandidateName = encryptWithRSA(
             selectedCandidateData?.name
           );
-          // console.log("Hiiiiii");
+          // console.log("Hiiiiii", selectedCandidateData.name);
 
           // toast.success(`✅ Fingerprint matched! Welcome, ${voter.name}`, {
           //   position: "top-right",
@@ -361,11 +371,11 @@ const PlacedVotes = () => {
           // );
           const encryptedVote = `${currentEncryptedHash}:${encryptedCandidateName}`;
 
-          console.log("Vote submission:", {
-            hashNIC: hashedNIC,
-            hashFingerPrint: hashedFingerprint,
-            encryptedVote: encryptedVote,
-          });
+          // console.log("Vote submission:", {
+          //   hashNIC: hashedNIC,
+          //   hashFingerPrint: hashedFingerprint,
+          //   encryptedVote: encryptedVote,
+          // });
 
           // // Send to backend
           // await axios.post("http://localhost:8000/api/sendVote", {
