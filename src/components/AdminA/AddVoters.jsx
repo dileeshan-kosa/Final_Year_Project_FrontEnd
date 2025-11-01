@@ -427,6 +427,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const AddVoters = () => {
   const initialData = {
@@ -443,7 +444,6 @@ const AddVoters = () => {
   const handleOnChange = (field, value) => {
     setData((prevData) => {
       const newData = { ...prevData, [field]: value };
-      // console.log(`${field}:`, value); // Log value to console
       return newData;
     });
   };
@@ -454,10 +454,18 @@ const AddVoters = () => {
       const response = await axios.get(
         "http://localhost:8000/capture-fingerprint"
       );
-      // const fingerprintData = response.data.fingerprint;
+
       const base64Data = response.data.fingerprintBase64;
       console.log("Fingerprint Data:", base64Data);
       setData((prevData) => ({ ...prevData, fingerprint: base64Data }));
+
+      // Show success toast notification
+      toast.success("Fingerprint scanned successfully!", {
+        // position: "top-center",
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+      });
     } catch (error) {
       console.error("Error scanning fingerprint:", error);
       toast.error("Fingerprint scan failed");
@@ -477,11 +485,19 @@ const AddVoters = () => {
         data
       );
       console.log("response", response);
-      toast.success("Voter added successfully!");
+      toast.success("Voter added successfully!", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+      });
       setData(initialData); // <-- Clear form after success
     } catch (error) {
       console.log("Error:", error);
-      toast.error("Something went wrong while adding voter");
+      toast.error("Something went wrong while adding voter", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+      });
     }
   };
 
@@ -519,7 +535,7 @@ const AddVoters = () => {
         <div className="flex flex-col w-full mb-5 overflow-auto">
           <label className="text-lg mb-2 text-center">DOB</label>
           <input
-            type="date" 
+            type="date"
             value={data.dob}
             onChange={(e) => handleOnChange("dob", e.target.value)}
             className="w-full h-12 text-center bg-slate-300 rounded-md p-2"
@@ -567,7 +583,7 @@ const AddVoters = () => {
             Scan Fingerprint
           </button>
           {data.fingerprint && (
-            <p className="text-green-500 mt-2">
+            <p className="text-blue-800 text-xl mt-4 font-bold tracking-wide text-center">
               Fingerprint scanned successfully!
             </p>
           )}
@@ -580,6 +596,8 @@ const AddVoters = () => {
           Submit
         </button>
       </form>
+      {/* Toast Notification Container */}
+      <ToastContainer />
     </div>
   );
 };

@@ -63,7 +63,11 @@ import React, { useEffect, useState } from "react";
 
 const PreviousElectionResult = () => {
   const [selectedYear, setSelectedYear] = useState("presidential-2024");
-  const availableYears = ["presidential-2024", "presidential-2025"];
+  const availableYears = [
+    "presidential-2024",
+    "presidential-2025",
+    "presidential-2026",
+  ];
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [result, setResult] = useState(null);
@@ -76,10 +80,10 @@ const PreviousElectionResult = () => {
       const res = await axios.get(
         `http://localhost:8000/api/get-awsBackupVotes?electionName=${year}`
       );
-      console.log("✅ Election Data:", res.data);
+      // console.log("✅ Election Data:", res.data);
       setResult(res.data);
     } catch (err) {
-      console.error("❌ Error fetching votes:", err);
+      console.error("Error fetching votes:", err);
       setError("Failed to fetch election results. Please try again later.");
       setResult(null);
     } finally {
@@ -113,7 +117,7 @@ const PreviousElectionResult = () => {
         </select>
       </div>
 
-      {/* 🌀 Loading Spinner */}
+      {/* Loading Spinner */}
       {loading && (
         <div className="flex flex-col items-center justify-center py-16">
           <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
@@ -121,8 +125,7 @@ const PreviousElectionResult = () => {
         </div>
       )}
 
-      {/* Loading / Error */}
-      {/* {loading && <p className="text-gray-600">Loading election data…</p>} */}
+      {/* Error */}
       {error && <p className="text-red-600">{error}</p>}
 
       {/* Render results */}
