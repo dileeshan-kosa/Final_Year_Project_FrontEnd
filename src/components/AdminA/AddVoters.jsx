@@ -505,7 +505,7 @@ const AddVoters = () => {
     <div className="flex justify-center items-center min-h-screen w-full">
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col items-center p-10 font-semibold text-black gap-6 w-[70%] max-w-3xl rounded-[50px] shadow-2xl from-emerald-700 to-emerald-900"
+        className="flex flex-col items-center p-10 font-semibold text-black gap-6 w-[70%] max-w-2xl rounded-[50px] shadow-2xl from-emerald-700 to-emerald-900"
       >
         {/* Form Fields */}
         <div className="flex flex-col w-full mb-5">
