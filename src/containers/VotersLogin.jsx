@@ -220,7 +220,7 @@ const VotersLogin = () => {
           onChange={handleOnChange}
           name="nic"
           value={data.nic}
-          placeholder="Enter NIC number"
+          placeholder="Enter Your NIC Number"
           className="w-full py-3 px-4 mb-8 rounded-lg bg-gray-300 text-black focus:outline-none"
         />
         <div className="flex flex-col w-full mb-5">
@@ -232,18 +232,30 @@ const VotersLogin = () => {
             Scan Fingerprint
           </button>
           {data.fingerprint && (
-            <p className="text-green-500 mt-2">
+            <p className="text-blue-800 text-lg mt-3 font-bold tracking-wide text-center">
               Fingerprint scanned successfully!
             </p>
           )}
         </div>
-
+        {/* 
         <motion.button
           onClick={handleSubmit}
           disabled={!isLoginEnabled}
           className={`w-44 py-3 rounded-lg font-bold text-lg focus:outline-none center transition duration-200 ${
             isLoginEnabled
               ? "bg-orange-500 text-white hover:bg-orange-600 hover:scale-110"
+              : "bg-gray-400 text-gray-200 cursor-not-allowed"
+          }`}
+        >
+          Login
+        </motion.button> */}
+
+        <motion.button
+          onClick={handleSubmit}
+          disabled={!isLoginEnabled}
+          className={`w-44 py-3 rounded-lg font-bold text-lg focus:outline-none transition duration-200 ${
+            isLoginEnabled
+              ? "bg-gradient-to-r from-amber-400 via-amber-500 to-orange-500 text-white shadow-md hover:scale-105"
               : "bg-gray-400 text-gray-200 cursor-not-allowed"
           }`}
         >
