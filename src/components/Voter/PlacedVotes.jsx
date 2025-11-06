@@ -232,17 +232,6 @@ const PlacedVotes = () => {
   const [rsaPublicKey, setRsaPublicKey] = useState("");
 
   const navigate = useNavigate();
-
-  // const rsaPublicKey = `-----BEGIN PUBLIC KEY-----
-  // MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAt+Rqe5bFkGiPaDG/KImZ
-  // cZ1HXY9SkbAqzYhKldQZiknEDtIQbdY7ZsB9b6MwOrT9JHRPHgf5zQZx2ZxUXHZP
-  // M9Fq3DhU5IXYrYYCVjU5T6kM2cs+JHZ5i5yzm0g8LRj+pWc9IjVj4EYYjfpqTXXm
-  // AKKYBfq9iCu8KrkW5J5b7i2FfU4SUGFbSKW8thH3x6sOtR9Zl9Rt2gf78zXfPGOe
-  // fs6hvOZKAH+c9ISZuHlAMwAVD9O8oNl2qBaUJ+ZV16Q+z+1tSkbtDbO77hzxK/Rl
-  // W/ztQAw7Pu4DlOHO86iNwzJ8xwZcIkpDP3Um9nO9lf2Fbd2CEPMmDbBpjc6s8zyE
-  // XwIDAQAB
-  // -----END PUBLIC KEY-----`;
-
   useEffect(() => {
     const fetchPublicKey = async () => {
       const res = await axios.get("http://localhost:8000/api/public-key");
