@@ -263,7 +263,14 @@ const PlacedVotes = () => {
       const newBinary = generateBinaryHash();
       const encrypted = encryptWithRSA(newBinary);
 
-      console.log("Binary", newBinary);
+      // ✅ Show fingerprint placement notification here
+      toast.info("👉 Please place your finger on the fingerprint scanner.", {
+        position: "top-right",
+        autoClose: 4000,
+        theme: "colored",
+      });
+
+      // console.log("Binary", newBinary);
       setCurrentEncryptedHash(encrypted); // Store current hash only
 
       // Add to history
@@ -314,6 +321,7 @@ const PlacedVotes = () => {
       alert("Please select a candidate before submitting!");
       return;
     }
+
     setIsSubmitting(true); // ← Start loading
 
     try {
