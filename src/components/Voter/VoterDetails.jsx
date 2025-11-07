@@ -98,6 +98,7 @@ const VoterDetails = () => {
   const navigate = useNavigate();
   const [data, setData] = useState({});
   const [showPopup, setShowPopup] = useState(false);
+  const [isChecked, setIsChecked] = useState(false);
 
   useEffect(() => {
     const storedVoter = localStorage.getItem("voterDetails");
@@ -190,7 +191,7 @@ const VoterDetails = () => {
       <AnimatePresence>
         {showPopup && (
           <motion.div
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50"
+            className="absolute inset-0 bg-gradient-to-b from-emerald-950 to-emerald-200 bg-opacity-90 backdrop-blur-md flex items-center justify-center z-50"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -206,7 +207,7 @@ const VoterDetails = () => {
                 Please Review & Read Carefully
               </h2>
 
-              <div className="text-sm space-y-3 leading-relaxed">
+              <div className="text-base space-y-3 leading-relaxed">
                 <p>
                   ✅ First, please verify that your profile details are correct.
                 </p>
@@ -243,7 +244,36 @@ const VoterDetails = () => {
                 </p>
               </div>
 
+              {/* ✅ Checkbox + Continue Button */}
               <div className="mt-6 text-center">
+                <label className="flex items-center justify-center gap-2 text-gray-200 text-sm mb-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={isChecked}
+                    onChange={() => setIsChecked(!isChecked)}
+                    className="w-4 h-4 accent-amber-500 cursor-pointer"
+                  />
+                  <span>I have read and understood the instructions.</span>
+                </label>
+
+                <motion.button
+                  whileHover={{ scale: isChecked ? 1.05 : 1 }}
+                  whileTap={{ scale: isChecked ? 0.95 : 1 }}
+                  disabled={!isChecked}
+                  onClick={() => setShowPopup(false)}
+                  className={`px-6 py-2 rounded-lg font-bold text-white shadow-md transition-all 
+                    ${
+                      isChecked
+                        ? "bg-gradient-to-r from-yellow-400 via-amber-500 to-orange-500 hover:shadow-amber-500/40"
+                        : "bg-gray-400 cursor-not-allowed"
+                    }`}
+                >
+                  {" "}
+                  Continue →
+                </motion.button>
+              </div>
+
+              {/* <div className="mt-6 text-center">
                 <p className="text-gray-300 text-sm mb-2 italic">
                   "I have read and understood the instructions."
                 </p>
@@ -255,7 +285,7 @@ const VoterDetails = () => {
                 >
                   Continue →
                 </motion.button>
-              </div>
+              </div> */}
             </motion.div>
           </motion.div>
         )}
