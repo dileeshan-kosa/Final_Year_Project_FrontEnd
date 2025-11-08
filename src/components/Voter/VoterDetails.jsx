@@ -99,6 +99,7 @@ const VoterDetails = () => {
   const [data, setData] = useState({});
   const [showPopup, setShowPopup] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
+  const [language, setLanguage] = useState("en");
 
   useEffect(() => {
     const storedVoter = localStorage.getItem("voterDetails");
@@ -124,6 +125,38 @@ const VoterDetails = () => {
     e.preventDefault();
     navigate("/placedvotes");
   };
+
+  // 🌐 Text Content in both languages
+  const text = {
+    en: {
+      title: "Please Review & Read Carefully",
+      content: [
+        "✅ First, please verify that your profile details are correct.",
+        "🗳️ After confirming, you will proceed to the voting screen.",
+        "👇 The list of candidates will be displayed — including their photo, symbol, and name.",
+        "✅ Select one candidate by clicking the circular selection box. Only one candidate can be chosen since this is a general election.",
+        "👉 Once selected, a message will appear asking you to place your finger on the fingerprint scanner before confirming your vote.",
+        "🔒 If your fingerprint matches, your vote will be securely cast and you’ll be automatically logged out.",
+      ],
+      checkbox: "I have read and understood the instructions.",
+      continue: "Continue →",
+    },
+
+    si: {
+      title: "කරුණාකර නිරීක්ෂණය කර සැලකිල්ලෙන් කියවන්න",
+      content: [
+        "✅ පළමුව, ඔබගේ පැතිකඩ තොරතුරු නිවැරදිදැයි සනාථ කරගන්න.",
+        "🗳️ තහවුරු කළ පසු, ඔබ ඡන්ද විධානය වෙත යොමු කෙරෙනු ඇත.",
+        "👇 අපේක්ෂකයන්ගේ ලැයිස්තුව එමගේ ඡායාරූපය, සංකේතය සහ නම ඇතුළුව පෙන්වා දෙනු ඇත.",
+        "✅ සාමාන්‍ය ඡන්ද මැතිවරණයක් වන නිසා ඔබට තනි අපේක්ෂකයෙකු පමණක් තෝරා ගැනීමට හැකි වේ.",
+        "👉 තෝරා ගැනීමෙන් පසු, ඔබට ඔබගේ ඇඟිලි සලකුණ ස්කෑනරයට තැබිය යුතු බව පණිවිඩයක් දිස්වනු ඇත.",
+        "🔒 ඔබගේ ඇඟිලි සලකුණ ගැලපේ නම්, ඔබගේ ඡන්දය ආරක්ෂිතව ඇතුළත් වන අතර ඔබ ස්වයංක්‍රීයව පිටවෙනු ඇත.",
+      ],
+      checkbox: "මම උපදෙස් කියවා තේරුම්ගෙන ඇතිමි.",
+      continue: "ඉදිරියට →",
+    },
+  };
+
   return (
     <div className="w-screen h-screen flex items-center justify-center bg-gradient-to-b from-emerald-950 to-emerald-100 relative">
       {/* --- Profile Card --- */}
@@ -203,46 +236,50 @@ const VoterDetails = () => {
               transition={{ duration: 0.3 }}
               className="bg-white/10 border border-white/20 rounded-2xl p-8 text-white max-w-lg mx-4 shadow-2xl backdrop-blur-md"
             >
+              {/* 🌐 Language Switcher */}
+              <div className="flex justify-center gap-4 mb-3">
+                <button
+                  onClick={() => setLanguage("en")}
+                  className={`px-3 py-1 rounded-md text-sm font-semibold ${
+                    language === "en"
+                      ? "bg-amber-500 text-white"
+                      : "bg-white/10 text-gray-300 hover:bg-white/20"
+                  }`}
+                >
+                  English
+                </button>
+                <button
+                  onClick={() => setLanguage("si")}
+                  className={`px-3 py-1 rounded-md text-sm font-semibold ${
+                    language === "si"
+                      ? "bg-amber-500 text-white"
+                      : "bg-white/10 text-gray-300 hover:bg-white/20"
+                  }`}
+                >
+                  සිංහල
+                </button>
+              </div>
+
+              {/* Title */}
               <h2 className="text-2xl font-bold mb-4 text-center text-yellow-400">
-                Please Review & Read Carefully
+                {text[language].title}
               </h2>
 
-              <div className="text-base space-y-3 leading-relaxed">
-                <p>
-                  ✅ First, please verify that your profile details are correct.
-                </p>
-
-                <p>
-                  🗳️ After confirming, you will proceed to the voting screen.
-                </p>
-
-                <p>
-                  👇 The list of candidates will be displayed — including their{" "}
-                  <span className="font-semibold text-amber-400">
-                    photo, symbol, and name
-                  </span>
-                  .
-                </p>
-
-                <p>
-                  ✅ Select one candidate by clicking the circular selection
-                  box. Only one candidate can be chosen since this is a general
-                  election.
-                </p>
-
-                <p>
-                  👉 Once selected, a message will appear asking you to{" "}
-                  <span className="font-semibold text-emerald-400">
-                    place your finger on the fingerprint scanner
-                  </span>{" "}
-                  before confirming your vote.
-                </p>
-
-                <p>
-                  🔒 If your fingerprint matches, your vote will be securely
-                  cast and you’ll be automatically logged out.
-                </p>
-              </div>
+              {/* Animated Text Content */}
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={language}
+                  initial={{ opacity: 0, x: 40 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -40 }}
+                  transition={{ duration: 0.4 }}
+                  className="text-base space-y-3 leading-relaxed"
+                >
+                  {text[language].content.map((line, i) => (
+                    <p key={i}>{line}</p>
+                  ))}
+                </motion.div>
+              </AnimatePresence>
 
               {/* ✅ Checkbox + Continue Button */}
               <div className="mt-6 text-center">
@@ -253,7 +290,7 @@ const VoterDetails = () => {
                     onChange={() => setIsChecked(!isChecked)}
                     className="w-4 h-4 accent-amber-500 cursor-pointer"
                   />
-                  <span>I have read and understood the instructions.</span>
+                  <span>{text[language].checkbox}</span>
                 </label>
 
                 <motion.button
@@ -268,24 +305,9 @@ const VoterDetails = () => {
                         : "bg-gray-400 cursor-not-allowed"
                     }`}
                 >
-                  {" "}
-                  Continue →
+                  {text[language].continue}
                 </motion.button>
               </div>
-
-              {/* <div className="mt-6 text-center">
-                <p className="text-gray-300 text-sm mb-2 italic">
-                  "I have read and understood the instructions."
-                </p>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setShowPopup(false)}
-                  className="px-6 py-2 rounded-lg font-bold bg-gradient-to-r from-yellow-400 via-amber-500 to-orange-500 text-white shadow-md hover:shadow-amber-500/40 transition-all"
-                >
-                  Continue →
-                </motion.button>
-              </div> */}
             </motion.div>
           </motion.div>
         )}
