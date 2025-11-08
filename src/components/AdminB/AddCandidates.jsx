@@ -49,11 +49,17 @@ const AddCandidates = () => {
   };
 
   return (
-    <div>
+    <div className="flex justify-start items-center w-full mt-6">
+      {/* Form Card */}
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col items-center p-10 font-semibold text-black gap-6 w-1/2 rounded-lg shadow-md"
+        className="flex flex-col items-center justify-center bg-white/10 backdrop-blur-md border border-white/20 
+                   p-10 rounded-t-[60px] shadow-2xl text-black gap-6 w-[550px] max-w-lg mx-auto"
       >
+        <h2 className="text-3xl font-bold text-emerald-950 mb-4">
+          Add Candidate
+        </h2>
+
         {/* Name */}
         <div className="flex flex-col w-full mb-5">
           <label className="text-lg mb-2 text-center">Name</label>
@@ -183,7 +189,7 @@ const AddCandidates = () => {
         </div>
 
         <button
-          className="mt-6 px-8 py-3 bg-orange-500 text-white font-bold text-lg rounded-lg hover:bg-orange-600 focus:outline-none"
+          className=" w-60 mt-4 px-10 py-3 bg-gradient-to-r from-yellow-400 via-amber-500 to-orange-500 text-white font-bold text-lg rounded-full shadow-md hover:shadow-amber-400/40 transition-all"
           //onClick={""}
         >
           Submit

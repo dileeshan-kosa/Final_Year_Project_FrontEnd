@@ -591,7 +591,7 @@ const AddVoters = () => {
 
         <button
           type="submit"
-          className="bg-orange-500 px-12 py-4 hover:bg-orange-600 rounded-full text-center w-44 max-w-[150px] text-xl hover:scale-110 transition-all mt-8"
+          className=" w-60 mt-4 px-10 py-3 bg-gradient-to-r from-yellow-400 via-amber-500 to-orange-500 text-white font-bold text-lg rounded-full shadow-md hover:shadow-amber-400/40 transition-all"
         >
           Submit
         </button>
