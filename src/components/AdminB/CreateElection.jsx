@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import dayjs from "dayjs";
 
 const DELAYS = [
@@ -105,6 +105,10 @@ const CreateElection = () => {
 
     try {
       // Post Api code part
+      // const res = await axios.post(
+      //   "http://localhost:8000/api/create-election",
+      //   payload
+      // );
     } catch (err) {
       console.error(
         "Create election error:",
@@ -112,6 +116,7 @@ const CreateElection = () => {
       );
     }
   };
+  // console.log("data", data);
 
   const isFormDisabled = () => {
     if (!serverStatus) return false;
@@ -172,47 +177,262 @@ const CreateElection = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-green-100/60 to-white py-8 px-6">
-      
+    <div className="min-h-screen bg-gradient-to-b from-emerald-700/60 via-emerald-300 py-10 px-4">
+      <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-white rounded-xl p-6 shadow-md">
+          <div className="text-center mb-4">
+            <h1 className="text-3xl font-extrabold">Create Election 🗳️</h1>
+          </div>
+
+          <div className="space-y-4">
+            <div className="bg-gray-100 rounded-md p-4 text-black">
+              <label className="text-lg font-semibold block mb-2">
+                Election Type
+              </label>
+              <select
+                value={form.electionType}
+                onChange={(e) =>
+                  setForm({ ...form, electionType: e.target.value })
+                }
+                className="w-full rounded-md p-3 bg-gray-200 border-none"
+                disabled={isFormDisabled()}
+              >
+                <option value="">Select Election Type</option>
+                <option value="president">President</option>
+                <option value="sis">SIS Election</option>
+              </select>
+            </div>
+
+            <h2 className="text-2xl font-bold text-center my-2">
+              Set The Nomination Period
+            </h2>
+            <div className="grid grid-cols-2 gap-3 text-black">
+              <div>
+                <label className="block text-sm font-medium mb-4">
+                  Nomination Start Date & Time
+                </label>
+                <input
+                  type="datetime-local"
+                  value={form.nominationStartAt}
+                  onChange={(e) =>
+                    setForm({ ...form, nominationStartAt: e.target.value })
+                  }
+                  className="w-full rounded-md p-3 bg-gray-100"
+                  disabled={isFormDisabled()}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-4">
+                  Nomination End Date & Time
+                </label>
+                <input
+                  type="datetime-local"
+                  value={form.nominationEndAt}
+                  onChange={(e) =>
+                    setForm({ ...form, nominationEndAt: e.target.value })
+                  }
+                  className="w-full rounded-md p-3 bg-gray-100"
+                  disabled={isFormDisabled()}
+                />
+              </div>
+            </div>
+
+            <div className="text-center">
+              <h3 className="text-xl font-semibold my-4">Election Delay</h3>
+              <select
+                value={form.delayBeforeStart}
+                onChange={(e) =>
+                  setForm({ ...form, delayBeforeStart: e.target.value })
+                }
+                className="rounded-md p-3 bg-gray-200 w-2/3 text-black"
+                disabled={isFormDisabled()}
+              >
+                <option value="">Delay Before Election</option>
+                {DELAYS.map((d) => (
+                  <option key={d.value} value={d.value}>
+                    {d.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <h2 className="text-xl font-bold text-center my-2">
+              Set The Election Period
+            </h2>
+            <div className="grid grid-cols-2 gap-4 text-black">
+              <div>
+                <label className="block text-sm font-medium mb-4">
+                  Election Start Date & Time
+                </label>
+                <input
+                  type="datetime-local"
+                  value={form.electionStartAt}
+                  onChange={(e) =>
+                    setForm({ ...form, electionStartAt: e.target.value })
+                  }
+                  className="w-full rounded-md p-3 bg-gray-100"
+                  disabled={isFormDisabled()}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-4">
+                  Election End Date & Time
+                </label>
+                <input
+                  type="datetime-local"
+                  value={form.electionEndAt}
+                  onChange={(e) =>
+                    setForm({ ...form, electionEndAt: e.target.value })
+                  }
+                  className="w-full rounded-md p-3 bg-gray-100"
+                  disabled={isFormDisabled()}
+                />
+              </div>
+            </div>
+
+            <div className="text-center pt-6">
+              <button
+                onClick={handleSubmit}
+                disabled={isFormDisabled()}
+                className={`px-7 py-2 rounded-full text-white font-bold text-lg shadow-lg ${
+                  isFormDisabled()
+                    ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+                    : "bg-[#6d4bde] hover:bg-[#593bd1]"
+                }`}
+              >
+                Start Election
+              </button>
+
+              {/* Message under button */}
+              {activeMsg && (
+                <p className="text-red-600 font-medium mt-3 text-sm">
+                  {activeMsg}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* RIGHT SIDE */}
+        <div className="bg-white rounded-xl p-6 shadow-md">
+          <h2 className="text-3xl font-extrabold text-center mb-4">
+            Count Down Timers
+          </h2>
+          <div className="grid grid-cols-3 gap-3 mb-4 text-black">
+            {[
+              { time: nomCountdown, label: "Nomination phase Ending..." },
+              { time: delayCountdown, label: "Delay Time Ending.." },
+              { time: elecCountdown, label: "Election Phase Ending.." },
+            ].map((x, i) => (
+              <div key={i} className="bg-gray-100 rounded-md p-4 text-center">
+                <div className="text-2xl font-mono bg-white text-black rounded-md px-3 py-2 inline-block shadow-sm">
+                  {formatSecondsToHMS(x.time)}
+                </div>
+                <div className="mt-2 text-sm font-medium">{x.label}</div>
+              </div>
+            ))}
+          </div>
+
+          <div className="border-t border-b py-3 mb-4">
+            <h3 className="text-xl font-semibold text-center mb-3">
+              Indicators
+            </h3>
+            <div className="flex justify-between items-center gap-2">
+              {getBox(
+                "Now In Nomination",
+                active === "nomination",
+                "bg-gradient-to-r from-blue-600 to-blue-800",
+                "text-white"
+              )}
+              {getBox(
+                "Now In Delay",
+                active === "waiting",
+                "bg-gradient-to-r from-yellow-600 to-amber-800",
+                "text-black"
+              )}
+              {getBox(
+                "Now In Election",
+                active === "running",
+                "bg-gradient-to-r from-green-400 to-green-800",
+                "text-white"
+              )}
+              {getBox(
+                "Ending The Election",
+                active === "completed",
+                "bg-gradient-to-r from-purple-600 to-violet-800",
+                "text-white"
+              )}
+            </div>
+          </div>
+
+          <div className="mb-4">
+            <h3 className="text-2xl font-bold text-center mb-3">
+              Current Election Status
+            </h3>
+            <div className="bg-white p-4 rounded-md shadow-inner min-h-[160px]">
+              {statusLoading ? (
+                <p className="text-sm text-gray-500">Loading status...</p>
+              ) : serverStatus ? (
+                <div className="space-y-2 text-sm">
+                  <div>
+                    <strong>Type:</strong> {serverStatus.electionType}
+                  </div>
+                  <div>
+                    <strong>Nomination:</strong>{" "}
+                    {dayjs(serverStatus.nominationStartAt).format(
+                      "YYYY/MM/DD hh:mm A"
+                    )}{" "}
+                    -{" "}
+                    {dayjs(serverStatus.nominationEndAt).format(
+                      "YYYY/MM/DD hh:mm A"
+                    )}
+                  </div>
+                  <div>
+                    <strong>Delay:</strong> {serverStatus.delayBeforeStart}
+                  </div>
+                  <div>
+                    <strong>Election:</strong>{" "}
+                    {dayjs(serverStatus.electionStartAt).format(
+                      "YYYY/MM/DD hh:mm A"
+                    )}{" "}
+                    -{" "}
+                    {dayjs(serverStatus.electionEndAt).format(
+                      "YYYY/MM/DD hh:mm A"
+                    )}
+                  </div>
+                  <div>
+                    <strong>Current status:</strong> {serverStatus.status}
+                  </div>
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500">
+                  No active election. Create a new one using the form.
+                </p>
+              )}
+            </div>
+
+            <div className="flex justify-center mt-4">
+              <button
+                onClick={fetchStatus}
+                className="px-6 py-2 rounded-full bg-[#6d4bde] text-white font-semibold shadow hover:bg-[#593bd1]"
+              >
+                Refresh status
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <h4 className="text-lg font-semibold mb-2">Indicator Guide</h4>
+            <ul className="list-disc list-inside text-sm space-y-1 text-black">
+              <li>Nomination Open (blue)</li>
+              <li>Nomination Closed / Waiting (gold)</li>
+              <li>Election Running (green)</li>
+              <li>Election Completed (purple)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
     </div>
-    // <div>
-    //   <form className="flex flex-col items-center p-10 font-semibold text-black gap-6 w-1/2 rounded-lg shadow-md">
-    //     <select className="w-full py-3 px-4 rounded-lg bg-gray-300 text-black focus:outline-none">
-    //       <option value="">Election Type</option>
-    //       <option value="">President</option>
-    //       <option value="">Sis Election</option>
-    //     </select>
-
-    //     <div className="flex flex-col w-full mb-5">
-    //       <label className="text-lg mb-2 text-center">Date</label>
-    //       <input
-    //         type="text"
-    //         //value={data.reasone}
-    //         //onChange={(e) => handleOnChange("reasone", e.target.value)}
-    //         className="w- h-12 text-center bg-slate-300 rounded-md p-2"
-    //         placeholder="Enter the Date"
-    //         required
-    //       />
-    //     </div>
-
-    //     <div className="flex flex-col w-full mb-5">
-    //       <label className="text-lg mb-2 text-center">
-    //         Nomination Duration
-    //       </label>
-    //       <input
-    //         type="text"
-    //         //value={data.reasone}
-    //         //onChange={(e) => handleOnChange("reasone", e.target.value)}
-    //         className="w- h-12 text-center bg-slate-300 rounded-md p-2"
-    //         placeholder="Enter the Duration"
-    //         required
-    //       />
-    //     </div>
-    //     <button className="bg-orange-600 hover:bg-orange-500 text-white py-2 px-4 rounded mt-8">
-    //       Start
-    //     </button>
-    //   </form>
-    // </div>
   );
 };
 
