@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import dayjs from "dayjs";
+import axios from "axios";
 
 const DELAYS = [
   { label: "5 minutes", value: "5min", minutes: 5 },
@@ -94,6 +95,15 @@ const CreateElection = () => {
     ev.preventDefault();
     if (!validate()) return;
 
+    // 🟩 Log all filled details in console
+    console.log("🗳️ Election Form Details:");
+    console.log("Election Type:", form.electionType);
+    console.log("Nomination Start:", form.nominationStartAt);
+    console.log("Nomination End:", form.nominationEndAt);
+    console.log("Delay Before Start:", form.delayBeforeStart);
+    console.log("Election Start:", form.electionStartAt);
+    console.log("Election End:", form.electionEndAt);
+
     const payload = {
       electionType: form.electionType,
       nominationStartAt: dayjs(form.nominationStartAt).toISOString(),
@@ -105,10 +115,24 @@ const CreateElection = () => {
 
     try {
       // Post Api code part
-      // const res = await axios.post(
-      //   "http://localhost:8000/api/create-election",
-      //   payload
-      // );
+      const res = await axios.post(
+        `http://localhost:8000/api/create-election`,
+        payload
+      );
+
+      if (res.data && res.data.success) {
+        setForm({
+          electionType: "",
+          nominationStartAt: "",
+          nominationEndAt: "",
+          delayBeforeStart: "",
+          electionStartAt: "",
+          electionEndAt: "",
+        });
+        fetchStatus();
+      } else {
+        console.error("Create failed:", res.data?.message || res.data);
+      }
     } catch (err) {
       console.error(
         "Create election error:",
