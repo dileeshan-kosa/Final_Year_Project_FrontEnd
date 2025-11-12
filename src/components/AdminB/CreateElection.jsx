@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import dayjs from "dayjs";
 import axios from "axios";
+import { motion, AnimatePresence } from "framer-motion";
 
 const DELAYS = [
   { label: "5 minutes", value: "5min", minutes: 5 },
@@ -36,7 +37,6 @@ const CreateElection = () => {
   const [nomCountdown, setNomCountdown] = useState(0);
   const [delayCountdown, setDelayCountdown] = useState(0);
   const [elecCountdown, setElecCountdown] = useState(0);
-  const [activeMsg, setActiveMsg] = useState("");
 
   const pollRef = useRef(null);
   const tickRef = useRef(null);
@@ -44,6 +44,16 @@ const CreateElection = () => {
   const fetchStatus = async () => {
     try {
       // Fetch API Code part
+      setStatusLoading(true);
+      const res = await axios.get(
+        "http://localhost:8000/api/get-electionstatus"
+      );
+      // console.log("Election", res.data.data);
+      if (res.data && res.data.success) {
+        setServerStatus(res.data.data);
+      } else {
+        setServerStatus(null);
+      }
     } catch (err) {
       console.error("Failed to fetch election status:", err.message || err);
     } finally {
@@ -54,7 +64,7 @@ const CreateElection = () => {
   // instant 1s backend polling
   useEffect(() => {
     fetchStatus();
-    pollRef.current = setInterval(fetchStatus, 1000);
+    pollRef.current = setInterval(fetchStatus, 5000);
     return () => clearInterval(pollRef.current);
   }, []);
 
@@ -121,6 +131,7 @@ const CreateElection = () => {
       );
 
       if (res.data && res.data.success) {
+        // console.log("✅ Election created successfully.", res.data);
         setForm({
           electionType: "",
           nominationStartAt: "",
@@ -151,41 +162,42 @@ const CreateElection = () => {
   useEffect(() => {
     function tick() {
       const now = dayjs();
-      if (!serverStatus) return;
+      if (!serverStatus) {
+        setNomCountdown(0);
+        setDelayCountdown(0);
+        setElecCountdown(0);
+        return;
+      }
       const ns = dayjs(serverStatus.nominationStartAt);
       const ne = dayjs(serverStatus.nominationEndAt);
       const es = dayjs(serverStatus.electionStartAt);
       const ee = dayjs(serverStatus.electionEndAt);
 
       // nomination countdown runs only between start & end
-      if (now.isAfter(ns) && now.isBefore(ne))
+      if (now.isAfter(ns) && now.isBefore(ne)) {
         setNomCountdown(Math.max(0, ne.diff(now, "second")));
-      else setNomCountdown(0);
+      } else {
+        setNomCountdown(0);
+      }
 
-      if (now.isAfter(ne) && now.isBefore(es))
+      if (now.isAfter(ne) && now.isBefore(es)) {
         setDelayCountdown(Math.max(0, es.diff(now, "second")));
-      else setDelayCountdown(0);
+      } else {
+        setDelayCountdown(0);
+      }
 
-      if (now.isAfter(es) && now.isBefore(ee))
+      // election remaining: during election
+      if (now.isAfter(es) && now.isBefore(ee)) {
         setElecCountdown(Math.max(0, ee.diff(now, "second")));
-      else setElecCountdown(0);
+      } else {
+        setElecCountdown(0);
+      }
     }
 
     tickRef.current = setInterval(tick, 1000);
     tick();
     return () => clearInterval(tickRef.current);
   }, [serverStatus]);
-
-  // active election message logic
-  useEffect(() => {
-    if (serverStatus?.status && serverStatus.status !== "completed") {
-      setActiveMsg(
-        "⚠️ You can’t create another election until the current one ends."
-      );
-    } else {
-      setActiveMsg("");
-    }
-  }, [serverStatus?.status]);
 
   const active = serverStatus?.status || null;
   const getBox = (label, isActive, gradient, textColor) => (
@@ -199,6 +211,13 @@ const CreateElection = () => {
       {label}
     </div>
   );
+
+  // Dynamic section heading (Current / Previous Election)
+  const getElectionHeading = () => {
+    if (!serverStatus) return "Current Election Status";
+    if (serverStatus.status === "completed") return "Previous Election Status";
+    return "Current Election Status";
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-emerald-700/60 via-emerald-300 py-10 px-4">
@@ -328,11 +347,20 @@ const CreateElection = () => {
               </button>
 
               {/* Message under button */}
-              {activeMsg && (
-                <p className="text-red-600 font-medium mt-3 text-sm">
-                  {activeMsg}
-                </p>
-              )}
+              <AnimatePresence>
+                {isFormDisabled() && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.2 }}
+                    className="mt-4 bg-yellow-100 border border-yellow-300 text-black/90 font-semibold rounded-md px-4 py-3 shadow-sm inline-block"
+                  >
+                    ⚠️ An election is currently active. You can’t create a new
+                    one until it ends.
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
         </div>
@@ -342,6 +370,7 @@ const CreateElection = () => {
           <h2 className="text-3xl font-extrabold text-center mb-4">
             Count Down Timers
           </h2>
+
           <div className="grid grid-cols-3 gap-3 mb-4 text-black">
             {[
               { time: nomCountdown, label: "Nomination phase Ending..." },
@@ -391,9 +420,10 @@ const CreateElection = () => {
 
           <div className="mb-4">
             <h3 className="text-2xl font-bold text-center mb-3">
-              Current Election Status
+              {/* Current Election Status */}
+              {getElectionHeading()}
             </h3>
-            <div className="bg-white p-4 rounded-md shadow-inner min-h-[160px]">
+            <div className="bg-white p-4 rounded-md shadow-inner min-h-[160px] text-black">
               {statusLoading ? (
                 <p className="text-sm text-gray-500">Loading status...</p>
               ) : serverStatus ? (
@@ -425,7 +455,17 @@ const CreateElection = () => {
                     )}
                   </div>
                   <div>
-                    <strong>Current status:</strong> {serverStatus.status}
+                    <strong>Current status:</strong>{" "}
+                    <motion.span
+                      key={serverStatus?.status || "loading"}
+                      initial={{ opacity: 0.7, y: 1 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0.7, y: -1 }}
+                      transition={{ duration: 0.2 }}
+                      className="text-gray-800 font-medium"
+                    >
+                      {serverStatus?.status}
+                    </motion.span>
                   </div>
                 </div>
               ) : (
@@ -444,14 +484,26 @@ const CreateElection = () => {
               </button>
             </div>
           </div>
-
+          
           <div>
             <h4 className="text-lg font-semibold mb-2">Indicator Guide</h4>
-            <ul className="list-disc list-inside text-sm space-y-1 text-black">
-              <li>Nomination Open (blue)</li>
-              <li>Nomination Closed / Waiting (gold)</li>
-              <li>Election Running (green)</li>
-              <li>Election Completed (purple)</li>
+            <ul className=" list-inside text-sm space-y-4">
+              <li>
+                <span className="inline-block w-12 h-6 mr-2 align-middle bg-gradient-to-r from-blue-600 to-blue-800 rounded-sm" />{" "}
+                Nomination Open (blue)
+              </li>
+              <li>
+                <span className="inline-block w-12 h-6 mr-2 align-middle bg-gradient-to-r from-yellow-600 to-amber-800 rounded-sm" />{" "}
+                Nomination Closed / Waiting (blue→red)
+              </li>
+              <li>
+                <span className="inline-block w-12 h-6 mr-2 align-middle bg-gradient-to-r from-green-400 to-green-800 rounded-sm" />{" "}
+                Election Running (gold)
+              </li>
+              <li>
+                <span className="inline-block w-12 h-6 mr-2 align-middle bg-gradient-to-r from-purple-600 to-violet-800 rounded-sm" />{" "}
+                Election Completed (gold→red)
+              </li>
             </ul>
           </div>
         </div>
