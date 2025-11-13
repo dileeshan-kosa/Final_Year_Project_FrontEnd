@@ -4,6 +4,7 @@ import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 
 const DELAYS = [
+  { label: "2 minutes", value: "2min", minutes: 2 },
   { label: "5 minutes", value: "5min", minutes: 5 },
   { label: "10 minutes", value: "10min", minutes: 10 },
   { label: "30 minutes", value: "30min", minutes: 30 },
@@ -105,7 +106,7 @@ const CreateElection = () => {
     ev.preventDefault();
     if (!validate()) return;
 
-    // 🟩 Log all filled details in console
+    // Log all filled details in console
     console.log("🗳️ Election Form Details:");
     console.log("Election Type:", form.electionType);
     console.log("Nomination Start:", form.nominationStartAt);
@@ -242,7 +243,7 @@ const CreateElection = () => {
               >
                 <option value="">Select Election Type</option>
                 <option value="president">President</option>
-                <option value="sis">SIS Election</option>
+                {/* <option value="sis">SIS Election</option> */}
               </select>
             </div>
 
@@ -484,7 +485,7 @@ const CreateElection = () => {
               </button>
             </div>
           </div>
-          
+
           <div>
             <h4 className="text-lg font-semibold mb-2">Indicator Guide</h4>
             <ul className=" list-inside text-sm space-y-4">

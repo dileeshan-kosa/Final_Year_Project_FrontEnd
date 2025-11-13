@@ -4,11 +4,13 @@ import { useDispatch } from "react-redux";
 import { NavLink, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { setAdminDetails } from "../../store/adminSlice";
+import { useElectionStatus } from "../../hooks/useElectionStatus";
 
 const LeftSectionAdminB = () => {
   const dispach = useDispatch();
   const navigate = useNavigate();
   const [activeLink, setActiveLink] = useState("");
+  const { isNominationPeriod, isElectionRunning, isIdle } = useElectionStatus();
 
   const handleLinkClick = (link) => {
     setActiveLink(link);
@@ -54,25 +56,40 @@ const LeftSectionAdminB = () => {
         </NavLink>
 
         <NavLink
-          to={"/adminbdashbord/add-candidates"}
+          to={isNominationPeriod ? "/adminbdashbord/add-candidates" : "#"}
           className={`flex items-center justify-center p-2 font-semibold rounded py-4 cursor-pointer ${
             activeLink === "/adminbdashbord/add-candidates"
               ? "bg-emerald-950"
               : "bg-emerald-800"
-          } text-white hover:bg-emerald-950`}
-          onClick={() => handleLinkClick("/adminbdashbord/add-candidates")}
+          } ${
+            !isNominationPeriod
+              ? "opacity-50 cursor-not-allowed hover:none text-white"
+              : "hover:bg-emerald-950 text-white"
+          }`}
+          onClick={() =>
+            isNominationPeriod &&
+            handleLinkClick("/adminbdashbord/add-candidates")
+          }
+          disabled={!isNominationPeriod}
         >
           <span>Add Candidates</span>
         </NavLink>
 
         <NavLink
-          to={"/adminbdashbord/election-result"}
+          to={isElectionRunning ? "/adminbdashbord/election-result" : "#"}
           className={`flex items-center justify-center p-2 font-semibold rounded py-4 cursor-pointer ${
             activeLink === "/adminbdashbord/election-result"
               ? "bg-emerald-950"
               : "bg-emerald-800"
-          } text-white hover:bg-emerald-950`}
-          onClick={() => handleLinkClick("/adminbdashbord/election-result")}
+          } ${
+            !isElectionRunning
+              ? "opacity-50 cursor-not-allowed hover:none text-white"
+              : "hover:bg-emerald-950 text-white"
+          }`}
+          onClick={() =>
+            isElectionRunning &&
+            handleLinkClick("/adminbdashbord/election-result")
+          }
         >
           <span>Election Result</span>
         </NavLink>

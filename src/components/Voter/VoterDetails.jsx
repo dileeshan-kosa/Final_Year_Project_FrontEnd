@@ -109,7 +109,7 @@ const VoterDetails = () => {
         const parsed = JSON.parse(storedVoter);
         setData(parsed);
 
-        // ⏱️ Show popup automatically after 3 seconds
+        // Show popup automatically after 3 seconds
         const timer = setTimeout(() => {
           setShowPopup(true);
         }, 3000);
@@ -126,7 +126,7 @@ const VoterDetails = () => {
     navigate("/placedvotes");
   };
 
-  // 🌐 Text Content in both languages
+  // Text Content in both languages
   const text = {
     en: {
       title: "Please Review & Read Carefully",
@@ -281,7 +281,7 @@ const VoterDetails = () => {
                 </motion.div>
               </AnimatePresence>
 
-              {/* ✅ Checkbox + Continue Button */}
+              {/* Checkbox + Continue Button */}
               <div className="mt-6 text-center">
                 <label className="flex items-center justify-center gap-2 text-gray-200 text-sm mb-3 cursor-pointer">
                   <input
