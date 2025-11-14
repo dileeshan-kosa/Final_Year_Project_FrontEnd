@@ -92,7 +92,15 @@ const CreateElection = () => {
       electionStartAt,
       electionEndAt,
     } = form;
-    if (!electionType) e.electionType = "Choose election type.";
+    // if (!electionType) e.electionType = "Choose election type.";
+
+    if (!electionType) {
+      e.electionType = "Election name is required.";
+    } else if (!/^presidential-(20\d{2})$/.test(electionType.trim())) {
+      e.electionType =
+        "Election name must follow the format 'presidential-YYYY' (e.g., presidential-2025).";
+    }
+
     if (!nominationStartAt) e.nominationStartAt = "Nomination start required.";
     if (!nominationEndAt) e.nominationEndAt = "Nomination end required.";
     if (!delayBeforeStart) e.delayBeforeStart = "Select delay.";
@@ -233,18 +241,21 @@ const CreateElection = () => {
               <label className="text-lg font-semibold block mb-2">
                 Election Type
               </label>
-              <select
+              <input
+                type="text"
+                placeholder="Enter election name (e.g., presidential-2025)"
                 value={form.electionType}
                 onChange={(e) =>
                   setForm({ ...form, electionType: e.target.value })
                 }
-                className="w-full rounded-md p-3 bg-gray-200 border-none"
+                className="w-full rounded-md p-3 bg-gray-100 border border-gray-300"
                 disabled={isFormDisabled()}
-              >
-                <option value="">Select Election Type</option>
-                <option value="president">President</option>
-                {/* <option value="sis">SIS Election</option> */}
-              </select>
+              />
+              {errors.electionType && (
+                <p className="text-red-600 text-sm mt-1">
+                  {errors.electionType}
+                </p>
+              )}
             </div>
 
             <h2 className="text-2xl font-bold text-center my-2">

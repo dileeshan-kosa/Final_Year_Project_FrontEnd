@@ -63,11 +63,12 @@ import React, { useEffect, useState } from "react";
 
 const PreviousElectionResult = () => {
   const [selectedYear, setSelectedYear] = useState("presidential-2024");
-  const availableYears = [
-    "presidential-2024",
-    "presidential-2025",
-    "presidential-2026",
-  ];
+  // const availableYears = [
+  //   "presidential-2024",
+  //   "presidential-2025",
+  //   "presidential-2026",
+  // ];
+  const [availableYears, setAvailableYears] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [result, setResult] = useState(null);
@@ -95,6 +96,21 @@ const PreviousElectionResult = () => {
   useEffect(() => {
     fetchElectionVotes(selectedYear);
   }, [selectedYear]);
+
+  useEffect(() => {
+    const fetchFolders = async () => {
+      try {
+        const res = await axios.get(
+          "http://localhost:8000/api/get-election-folders"
+        );
+        setAvailableYears(res.data.folders);
+      } catch (err) {
+        console.error("Failed to load folders:", err);
+      }
+    };
+
+    fetchFolders();
+  }, []);
 
   return (
     <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
