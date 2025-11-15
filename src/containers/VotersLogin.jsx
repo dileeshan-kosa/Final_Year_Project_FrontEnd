@@ -158,9 +158,10 @@ const VotersLogin = () => {
       );
 
       if (response.status === 200) {
-        const { voter } = response.data;
-        if (voter) {
+        const { voter, permission = false } = response.data;
+        if (voter && !voter.permission) {
           localStorage.setItem("voterDetails", JSON.stringify(voter));
+          // localStorage.setItem("voterToken", response.data.token);
         }
         setData((prev) => ({
           ...prev,
@@ -183,6 +184,10 @@ const VotersLogin = () => {
         toast.error("❌ No match found for this fingerprint.", {
           position: "top-right",
         });
+      } else if (response.status === 403) {
+        console.log("Warning message :", response);
+        // const warningMessage = response.data.
+        // toast.warning(``)
       } else {
         toast.error("❌ Error during fingerprint scanning.", {
           position: "top-right",
@@ -194,14 +199,23 @@ const VotersLogin = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // const details = JSON.parse(localStorage.getItem("voterDetails"));
+      // console.log("details : ", details);
+
+      // const payload = {
+      //   nic: details.nic,
+      //   fingerprint: details.fingerprint,
+      // };
+
       // const response = await axios.post(
       //   `http://localhost:8000/api/signupvoter`,
-      //   data,
-      //   {
-      //     withCredentials: true,
-      //   }
+      //   // data,
+      //   payload
+      //   // {
+      //   //   withCredentials: true,
+      //   // }
       // );
-      // console.log("Update response:", response);
+      // console.log("Login response :", response);
       localStorage.setItem("isLoggedIn", "true");
 
       navigate("/voterdetails");

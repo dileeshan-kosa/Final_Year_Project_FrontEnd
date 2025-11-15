@@ -345,43 +345,9 @@ const PlacedVotes = () => {
           const encryptedCandidateName = encryptWithRSA(
             selectedCandidateData?.name
           );
-          // console.log("Hiiiiii", selectedCandidateData.name);
 
-          // toast.success(`✅ Fingerprint matched! Welcome, ${voter.name}`, {
-          //   position: "top-right",
-          // });
-          // console.log("gggggggggggggggggggggggg");
-
-          // console.log(
-          //   'Voter hash nic and fingerprint :\nObject { Hashed: "' +
-          //     hashedNIC +
-          //     '" / ' +
-          //     encryptedCandidateName +
-          //     " }"
-          // );
-
-          // console.log(
-          //   "Vote submission details: encryptedVote = " +
-          //     currentEncryptedHash +
-          //     ":" +
-          //     encryptedCandidateName
-          // );
           const encryptedVote = `${currentEncryptedHash}:${encryptedCandidateName}`;
 
-          // console.log("Vote submission:", {
-          //   hashNIC: hashedNIC,
-          //   hashFingerPrint: hashedFingerprint,
-          //   encryptedVote: encryptedVote,
-          // });
-
-          // // Send to backend
-          // await axios.post("http://localhost:8000/api/sendVote", {
-          //   hashNIC: hashedNIC,
-          //   hashFingerPrint: hashedFingerprint,
-          //   encryptedVote: encryptedVote,
-          // });
-
-          // Prepare data
           const voteData = {
             hashNIC: hashedNIC,
             hashFingerPrint: hashedFingerprint,
@@ -392,7 +358,16 @@ const PlacedVotes = () => {
           console.log("Sending vote data to backend:", voteData);
 
           // Send to backend
-          await axios.post("http://localhost:8000/api/sendVote", voteData);
+          await axios.post(
+            "http://localhost:8000/api/sendVote",
+            voteData,
+            voteData,
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("voterToken")}`,
+              },
+            }
+          );
 
           console.log("Data Submit");
 
