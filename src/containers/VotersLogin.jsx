@@ -184,10 +184,10 @@ const VotersLogin = () => {
         toast.error("❌ No match found for this fingerprint.", {
           position: "top-right",
         });
-      } else if (response.status === 403) {
-        console.log("Warning message :", response);
+      } else if (error.response?.status === 403) {
+        console.log("Warning message :", error);
         // const warningMessage = response.data.
-        // toast.warning(``)
+        toast.warning(`You're already voted.`);
       } else {
         toast.error("❌ Error during fingerprint scanning.", {
           position: "top-right",

@@ -299,6 +299,32 @@ const PlacedVotes = () => {
     }
   };
 
+  const makeUserVoted = async () => {
+    try {
+      const storedVoter = localStorage.getItem("voterDetails");
+
+      if (!storedVoter) return;
+
+      const voter = JSON.parse(storedVoter);
+      const userNIC = voter.nic;
+
+      console.log("Sending NIC:", userNIC);
+
+      // Send NIC to backend
+      const res = await axios.post(
+        "http://localhost:8000/api/updated-hasVoted",
+        { nic: userNIC }
+      );
+
+      // const userNIC = axios.get("http://localhost:8000/api/updated-hasVoted");
+    } catch (error) {
+      console.log("Make user voted error :", error);
+    } finally {
+      localStorage.clear();
+      navigate("/voterslogin");
+    }
+  };
+
   useEffect(() => {
     fetchCandidateData();
   }, []);
@@ -307,8 +333,7 @@ const PlacedVotes = () => {
     if (hasVoted) {
       setIsRedirecting(true); // start spinner
       const timeout = setTimeout(() => {
-        localStorage.clear();
-        navigate("/voterslogin");
+        makeUserVoted(data.nic);
       }, 4000);
 
       return () => clearTimeout(timeout);
