@@ -428,8 +428,12 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useElectionStatus } from "../../hooks/useElectionStatus";
+import { useNavigate } from "react-router-dom";
 
 const AddVoters = () => {
+  const navigate = useNavigate();
+
   const initialData = {
     name: "",
     nic: "",
@@ -440,6 +444,10 @@ const AddVoters = () => {
   };
 
   const [data, setData] = useState(initialData);
+  const [remainingTime, setRemainingTime] = useState(null);
+
+  // Hook to get election timing
+  const { isNominationPeriod, status, loading } = useElectionStatus();
 
   const handleOnChange = (field, value) => {
     setData((prevData) => {
@@ -519,8 +527,73 @@ const AddVoters = () => {
     }
   };
 
+  // Timer Logic
+  useEffect(() => {
+    let timer;
+    const fetchTimer = async () => {
+      try {
+        const res = await fetch("http://localhost:8000/api/get-electionstatus");
+        const json = await res.json();
+        const data = json?.data;
+        if (!data) return;
+
+        const end = new Date(data.nominationEndAt).getTime();
+        timer = setInterval(() => {
+          const now = new Date().getTime();
+          const diff = end - now;
+
+          if (diff <= 0) {
+            clearInterval(timer);
+            navigate("/adminadashbord");
+          } else {
+            const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            const minutes = Math.floor((diff / (1000 * 60)) % 60);
+            const seconds = Math.floor((diff / 1000) % 60);
+            setRemainingTime(`${hours}h ${minutes}m ${seconds}s`);
+          }
+        }, 1000);
+      } catch (err) {
+        console.error("Timer error:", err);
+      }
+    };
+    fetchTimer();
+    return () => clearInterval(timer);
+  }, [navigate]);
+
+  // Access Control
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen text-xl font-bold text-gray-600">
+        Checking Election Status...
+      </div>
+    );
+  }
+
+  if (!isNominationPeriod) {
+    return (
+      <div className="flex flex-col justify-center items-center h-screen">
+        <h2 className="text-2xl font-bold text-red-600 mb-3">
+          🚫 Nomination Period is not active.
+        </h2>
+        <button
+          onClick={() => navigate("/adminadashbord")}
+          className="px-6 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+        >
+          Go Back
+        </button>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex justify-center items-center min-h-screen w-full">
+    <div className="flex flex-col justify-center items-center min-h-screen w-full mt-4">
+      {/* Remaining time display */}
+      {remainingTime && (
+        <div className="mb-5 ml-10 text-center text-lg font-bold text-orange-600 bg-white p-3 rounded-lg shadow-md">
+          🕒 Nomination period ends in: {remainingTime}
+        </div>
+      )}
+
       <form
         onSubmit={handleSubmit}
         className="flex flex-col items-center p-10 font-semibold text-black gap-6 w-[70%] max-w-2xl rounded-[50px] shadow-2xl from-emerald-700 to-emerald-900"
