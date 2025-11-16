@@ -130,6 +130,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useElectionStatus } from "../hooks/useElectionStatus";
 
 const VotersLogin = () => {
   const [data, setData] = useState({
@@ -138,6 +139,9 @@ const VotersLogin = () => {
   });
 
   const navigate = useNavigate();
+
+  //  Get current election result
+  const { isElectionRunning, status } = useElectionStatus();
 
   const handleOnChange = (e) => {
     const { name, value } = e.target;
@@ -148,10 +152,18 @@ const VotersLogin = () => {
     }));
   };
 
-  const isLoginEnabled = data.nic.trim() !== "" && data.fingerprint !== "";
+  const isLoginEnabled =
+    data.nic.trim() !== "" && data.fingerprint !== "" && isElectionRunning;
 
+  // Block fingerPrint sacn when election is nor running.
   // Handle fingerprint scan
   const handleFingerprintScan = async () => {
+    if (!isElectionRunning) {
+      toast.error("❌ Election is not running. Login is disabled.", {
+        position: "top-right",
+      });
+      return;
+    }
     try {
       const response = await axios.get(
         `http://localhost:8000/logincapture-fingerprint/${data.nic}`
@@ -199,6 +211,11 @@ const VotersLogin = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      if (!isElectionRunning) {
+        toast.error("❌ Election is not running now. Login disabled.");
+        return;
+      }
+
       // const details = JSON.parse(localStorage.getItem("voterDetails"));
       // console.log("details : ", details);
 

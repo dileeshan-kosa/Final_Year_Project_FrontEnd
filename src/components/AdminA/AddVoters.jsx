@@ -448,6 +448,13 @@ const AddVoters = () => {
     });
   };
 
+  // NIC validation (Sri Lanka Old + New NIC formats)
+  const isValidNIC = (nic) => {
+    const oldNIC = /^[0-9]{9}[VvXx]$/; // Old: 9 digits + V/X
+    const newNIC = /^[0-9]{12}$/; // New: 12 digits
+    return oldNIC.test(nic) || newNIC.test(nic);
+  };
+
   // Handle fingerprint scan
   const handleFingerprintScan = async () => {
     try {
@@ -479,6 +486,17 @@ const AddVoters = () => {
   // Save voter data
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // NIC validation before submitting
+    if (!isValidNIC(data.nic)) {
+      toast.error("Invalid NIC. Use 9 digits + V/X OR 12-digit NIC.", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+      });
+      return;
+    }
+
     try {
       const response = await axios.post(
         "http://localhost:8000/api/manage-voters",
@@ -559,7 +577,7 @@ const AddVoters = () => {
           </select>
         </div>
 
-        <div className="flex flex-col w-full mb-5">
+        {/* <div className="flex flex-col w-full mb-5">
           <label className="text-lg mb-2 text-center">District</label>
           <input
             type="text"
@@ -569,6 +587,42 @@ const AddVoters = () => {
             placeholder="Type the Distric"
             required
           />
+        </div> */}
+        <div className="flex flex-col w-full mb-5">
+          <label className="text-lg mb-2 text-center">District</label>
+          <select
+            value={data.district}
+            onChange={(e) => handleOnChange("district", e.target.value)}
+            className="w-full h-12 text-center bg-slate-300 rounded-md p-2"
+            required
+          >
+            <option value="">Select District</option>
+            <option value="Ampara">Ampara</option>
+            <option value="Anuradhapura">Anuradhapura</option>
+            <option value="Badulla">Badulla</option>
+            <option value="Batticaloa">Batticaloa</option>
+            <option value="Colombo">Colombo</option>
+            <option value="Galle">Galle</option>
+            <option value="Gampaha">Gampaha</option>
+            <option value="Hambantota">Hambantota</option>
+            <option value="Jaffna">Jaffna</option>
+            <option value="Kalutara">Kalutara</option>
+            <option value="Kandy">Kandy</option>
+            <option value="Kegalle">Kegalle</option>
+            <option value="Kilinochchi">Kilinochchi</option>
+            <option value="Kurunegala">Kurunegala</option>
+            <option value="Mannar">Mannar</option>
+            <option value="Matale">Matale</option>
+            <option value="Matara">Matara</option>
+            <option value="Monaragala">Monaragala</option>
+            <option value="Mullaitivu">Mullaitivu</option>
+            <option value="Nuwara Eliya">Nuwara Eliya</option>
+            <option value="Polonnaruwa">Polonnaruwa</option>
+            <option value="Puttalam">Puttalam</option>
+            <option value="Ratnapura">Ratnapura</option>
+            <option value="Trincomalee">Trincomalee</option>
+            <option value="Vavuniya">Vavuniya</option>
+          </select>
         </div>
 
         {/* More Form Fields */}
