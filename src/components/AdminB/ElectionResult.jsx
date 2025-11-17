@@ -33,6 +33,23 @@ const ElectionResult = () => {
   // invalide Vote count
   const [rejectedCount, setRejectedCount] = useState(0);
 
+  // Election timing info from backend
+  const [electionInfo, setElectionInfo] = useState(null); // full data object from /api/election-status
+  const [loadingElectionInfo, setLoadingElectionInfo] = useState(true);
+
+  // Countdown strings
+  const [electionCountdown, setElectionCountdown] = useState(""); // top-right
+  const [reportCountdown, setReportCountdown] = useState(""); // under pie chart
+
+  // Report window state
+  const [isReportWindowOpen, setIsReportWindowOpen] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  // refs to intervals so we can clear on unmount
+  const pollIntervalRef = useRef(null);
+  const countdownIntervalRef = useRef(null);
+  const votesIntervalRef = useRef(null);
+
   // Color palette for up to 20 unique candidates
   const colorPalette = [
     "#3B82F6",
@@ -61,16 +78,37 @@ const ElectionResult = () => {
 
   const fetchVotes = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/api/get-blockchainVotes");
+      const res = await axios.get(
+        "http://localhost:8000/api/get-blockchainVotes"
+      );
       const data = res.data;
 
-      const total = data.reduce((sum, c) => sum + c.votes, 0);
+      const total = data.reduce((sum, c) => sum + (c.votes || 0), 0);
       setCandidates(data);
       setTotalVotes(total);
     } catch (err) {
       console.error("❌ Error fetching vote results:", err);
     }
   };
+
+  // ---------------------------
+  // Fetch election status info
+  // ---------------------------
+  // const fetchElectionInfo = async () => {
+  //   try {
+  //     setLoadingElectionInfo(true);
+  //     const res = await axios.get(
+  //       "http://localhost:8000/api/get-electionstatus"
+  //     );
+  //     const info = res.data?.data ?? null;
+  //     setElectionInfo(info);
+  //   } catch (err) {
+  //     console.error("❌ Error fetching election status:", err);
+  //     setElectionInfo(null);
+  //   } finally {
+  //     setLoadingElectionInfo(false);
+  //   }
+  // };
 
   // Initial fetch + poll every 5 seconds
   useEffect(() => {

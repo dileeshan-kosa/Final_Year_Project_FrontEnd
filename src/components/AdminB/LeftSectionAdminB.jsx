@@ -75,7 +75,7 @@ const LeftSectionAdminB = () => {
           <span>Add Candidates</span>
         </NavLink>
 
-        <NavLink
+        {/* <NavLink
           to={isElectionRunning ? "/adminbdashbord/election-result" : "#"}
           className={`flex items-center justify-center p-2 font-semibold rounded py-4 cursor-pointer ${
             activeLink === "/adminbdashbord/election-result"
@@ -90,6 +90,20 @@ const LeftSectionAdminB = () => {
             isElectionRunning &&
             handleLinkClick("/adminbdashbord/election-result")
           }
+        >
+          <span>Election Result</span>
+        </NavLink> */}
+
+        {/* developing purpose */}
+
+        <NavLink
+          to="/adminbdashbord/election-result"
+          className={`flex items-center justify-center p-2 font-semibold rounded py-4 cursor-pointer ${
+            activeLink === "/adminbdashbord/election-result"
+              ? "bg-emerald-950"
+              : "bg-emerald-800"
+          } hover:bg-emerald-950 text-white`}
+          onClick={() => handleLinkClick("/adminbdashbord/election-result")}
         >
           <span>Election Result</span>
         </NavLink>
