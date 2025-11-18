@@ -441,6 +441,7 @@ const AddVoters = () => {
     gender: "",
     district: "",
     fingerprint: "", // Store fingerprint data here
+    fingerprintTemplateId: "",  
   };
 
   const [data, setData] = useState(initialData);
@@ -471,8 +472,10 @@ const AddVoters = () => {
       );
 
       const base64Data = response.data.fingerprintBase64;
+      const TemplateID = response.data.templateId
       console.log("Fingerprint Data:", base64Data);
       setData((prevData) => ({ ...prevData, fingerprint: base64Data }));
+      setData((prevData) => ({ ...prevData, fingerprintTemplateId: TemplateID }));
 
       // Show success toast notification
       toast.success("Fingerprint scanned successfully!", {

@@ -59,7 +59,7 @@ const LeftSectionAdminA = () => {
           }
           disabled={!isNominationPeriod}
         >
-          <span>ADD</span>
+          <span>Add Voter</span>
         </NavLink>
 
         <NavLink
